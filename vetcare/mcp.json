@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=jlsqirpmozthuodjbdrj",
+      "headers": {
+        "Authorization": "Bearer <SET_YOUR_VERCEL_API_KEY>"
+      }
+    }
+  }
+}

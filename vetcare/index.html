@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Gullan | Veterinary Excellence</title>
+    <link rel="preload" as="image" href="assets/images/horse.webp" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet" id="dynamic-font"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="translations.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="site-dynamic.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#58a3fe",
+                        "surface-container": "#e6eeff",
+                        "primary-fixed-dim": "#95d4b3",
+                        "fresh-green": "#2D6A4F",
+                        "success-green": "#52B788",
+                        "secondary-fixed-dim": "#a4c9ff",
+                        "on-secondary-container": "#003869",
+                        "primary": "#0f5238",
+                        "secondary": "#005fad",
+                        "surface": "#f8f9ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#dce9ff",
+                        "outline": "#707973",
+                        "surface-container-highest": "#d5e3fc",
+                        "secondary-fixed": "#d4e3ff",
+                        "professional-white": "#FFFFFF",
+                        "surface-container-low": "#eff4ff",
+                        "on-tertiary-fixed": "#191c1e",
+                        "tertiary-container": "#5c5f61",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-surface-variant": "#404943",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#bfc9c1",
+                        "on-error": "#ffffff",
+                        "tertiary": "#444749",
+                        "light-gray": "#F1F5F9",
+                        "surface-bright": "#f8f9ff",
+                        "soft-blue": "#4895EF",
+                        "primary-container": "#2d6a4f",
+                        "surface-tint": "#2c694e",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "clinical-bg": "#F8FAFC",
+                        "on-background": "#0d1c2e",
+                        "primary-fixed": "#b1f0ce",
+                        "on-primary-fixed": "#002114",
+                        "tertiary-fixed": "#e0e3e5",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#233144",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#a8e7c5",
+                        "inverse-primary": "#95d4b3",
+                        "on-tertiary-container": "#d7d9db",
+                        "on-surface": "#0d1c2e",
+                        "background": "#f8f9ff",
+                        "surface-variant": "#d5e3fc",
+                        "surface-dim": "#ccdbf3",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-secondary-fixed": "#001c39",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-fixed-variant": "#004884",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "margin-desktop": "48px",
+                        "stack-lg": "48px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "stack-md": "24px",
+                        "gutter": "24px",
+                        "stack-sm": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-md-mobile": ["Syne", "sans-serif"],
+                        "title-lg": ["Syne", "sans-serif"],
+                        "display-lg-mobile": ["Syne", "sans-serif"],
+                        "caption": ["Manrope", "sans-serif"],
+                        "body-lg": ["Manrope", "sans-serif"],
+                        "display-lg": ["Syne", "sans-serif"],
+                        "body-md": ["Manrope", "sans-serif"],
+                        "label-md": ["Manrope", "sans-serif"],
+                        "headline-md": ["Syne", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "headline-md-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "caption": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        :root {
+            --vc-ink: #102118;
+            --vc-haze: rgba(82, 183, 136, 0.16);
+            --vc-sky: rgba(72, 149, 239, 0.16);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            position: relative;
+            background-image:
+                radial-gradient(circle at 8% 12%, var(--vc-haze), transparent 34%),
+                radial-gradient(circle at 86% 14%, var(--vc-sky), transparent 30%),
+                linear-gradient(180deg, #f8fbff 0%, #f3f8fc 40%, #eef5f8 100%);
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image: radial-gradient(rgba(16, 33, 24, 0.06) 0.7px, transparent 0.7px);
+            background-size: 2px 2px;
+            opacity: 0.2;
+            z-index: -1;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .soft-hover:hover {
+            box-shadow: 0 10px 40px -10px rgba(15, 82, 56, 0.15);
+            transform: translateY(-4px);
+        }
+        .hero-slider-item {
+            opacity: 0;
+            transition: opacity 1s ease;
+            will-change: opacity;
+            background-size: cover;
+            background-position: center;
+            pointer-events: none;
+        }
+        .hero-slider-item.is-active {
+            opacity: 1;
+        }
+        .hero-ambient {
+            position: absolute;
+            border-radius: 9999px;
+            filter: blur(30px);
+            opacity: 0.5;
+            animation: floatDrift 12s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .hero-ambient--one {
+            width: 280px;
+            height: 280px;
+            background: rgba(82, 183, 136, 0.46);
+            top: -60px;
+            right: 8%;
+        }
+        .hero-ambient--two {
+            width: 220px;
+            height: 220px;
+            background: rgba(72, 149, 239, 0.4);
+            bottom: -70px;
+            right: 18%;
+            animation-delay: 1.4s;
+        }
+        @keyframes floatDrift {
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            50% { transform: translate3d(-14px, -22px, 0); }
+        }
+        .masonry-grid {
+            column-count: 1;
+            column-gap: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .masonry-grid { column-count: 2; }
+        }
+        @media (min-width: 1024px) {
+            .masonry-grid { column-count: 3; }
+        }
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+        }
+        .lang-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .form-input-focus:focus {
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 2px #4895EF;
+            outline: none;
+        }
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+        section[id] {
+            scroll-margin-top: 88px;
+        }
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+            will-change: opacity, transform;
+        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-on-scroll:nth-child(2n) {
+            transition-delay: 0.06s;
+        }
+        .reveal-on-scroll:nth-child(3n) {
+            transition-delay: 0.1s;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-on-scroll {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+            .hero-ambient {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-clinical-bg text-on-surface font-body-md selection:bg-fresh-green/20">
+<!-- Top Navigation Anchor -->
+<header class="bg-professional-white/80 dark:bg-on-background/80 shadow-sm shadow-soft-blue/10 docked full-width top-0 sticky backdrop-blur-md z-50">
+<nav class="w-full px-margin-mobile md:px-margin-desktop py-base max-w-container-max mx-auto z-50">
+<div class="flex justify-between items-center gap-3">
+<div class="flex items-center gap-base min-w-0">
+<span class="material-symbols-outlined text-fresh-green" style="font-size: 32px;">pets</span>
+<span class="text-title-lg font-title-lg text-fresh-green tracking-tight truncate" data-i18n="nav.brand">GULLAN</span>
+</div>
+<div class="hidden md:flex items-center gap-gutter">
+<a class="text-fresh-green font-bold border-b-2 border-fresh-green pb-1 font-label-md text-label-md" href="#home" data-i18n="nav.home">Home</a>
+<a class="text-on-surface-variant hover:text-fresh-green transition-colors font-label-md text-label-md" href="#services" data-i18n="nav.services">Services</a>
+<a class="text-on-surface-variant hover:text-fresh-green transition-colors font-label-md text-label-md" href="#appointments" data-i18n="nav.appointments">Appointments</a>
+<a class="text-on-surface-variant hover:text-fresh-green transition-colors font-label-md text-label-md" href="#contact" data-i18n="nav.contact">Contact</a>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<div class="flex gap-1 bg-light-gray rounded-full p-1">
+<button onclick="setLanguage('en')" class="lang-btn text-on-surface-variant hover:text-fresh-green" data-lang="en">EN</button>
+<button onclick="setLanguage('ar')" class="lang-btn text-on-surface-variant hover:text-fresh-green" data-lang="ar">ع</button>
+<button onclick="setLanguage('ku')" class="lang-btn text-on-surface-variant hover:text-fresh-green" data-lang="ku">ک</button>
+</div>
+<a href="#appointments" data-button-id="nav_book_appointment" class="hidden md:inline-flex bg-fresh-green text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md hover:scale-105 transition-transform duration-200 active:scale-95 shadow-md shadow-fresh-green/10">
+    <span data-i18n="nav.bookAppointment">Book Appointment</span>
+</a>
+<button id="mobile-menu-toggle" class="md:hidden h-10 w-10 rounded-xl border border-light-gray bg-professional-white text-fresh-green flex items-center justify-center" type="button" aria-controls="mobile-menu" aria-expanded="false" aria-label="Toggle menu">
+    <span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+
+<div id="mobile-menu" class="hidden md:hidden pt-3 pb-2 border-t border-light-gray mt-3">
+<div class="flex flex-col gap-2">
+<a class="px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low" href="#home" data-i18n="nav.home">Home</a>
+<a class="px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low" href="#services" data-i18n="nav.services">Services</a>
+<a class="px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low" href="#appointments" data-i18n="nav.appointments">Appointments</a>
+<a class="px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low" href="#contact" data-i18n="nav.contact">Contact</a>
+<a href="#appointments" data-button-id="mobile_nav_book_appointment" class="mt-1 bg-fresh-green text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md text-center shadow-md shadow-fresh-green/10">
+    <span data-i18n="nav.bookAppointment">Book Appointment</span>
+</a>
+</div>
+</div>
+</nav>
+</header>
+<main>
+<!-- ============================================ HOME SECTION ============================================ -->
+<section id="home">
+<!-- Hero Section -->
+<section class="relative h-[90vh] md:h-[85vh] w-full overflow-hidden flex items-center">
+<!-- Background Slider -->
+<div class="absolute inset-0 z-0">
+<div data-image-id="hero_slider_1" class="hero-slider-item is-active absolute inset-0 bg-cover bg-center" style="background-image: url('assets/images/horse.webp');"></div>
+<div data-image-id="hero_slider_2" class="hero-slider-item absolute inset-0 bg-cover bg-center" style="background-image: url('assets/images/vet.webp');"></div>
+<div data-image-id="hero_slider_3" class="hero-slider-item absolute inset-0 bg-cover bg-center" style="background-image: url('assets/images/cow.webp');"></div>
+<div data-image-id="hero_slider_4" class="hero-slider-item absolute inset-0 bg-cover bg-center" style="background-image: url('assets/images/cat.webp');"></div>
+<!-- Glassmorphism Overlay -->
+<div class="absolute inset-0 bg-gradient-to-r from-on-background/70 to-transparent backdrop-blur-[1px]"></div>
+<div class="hero-ambient hero-ambient--one"></div>
+<div class="hero-ambient hero-ambient--two"></div>
+</div>
+<div class="relative z-10 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<div class="max-w-2xl text-professional-white">
+<span class="inline-block px-4 py-1 rounded-full bg-fresh-green/90 text-on-primary font-label-md text-label-md mb-stack-md uppercase tracking-widest" data-i18n="home.premiumCare">Premium Care</span>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg mb-stack-md leading-tight">
+    <span data-i18n="home.heroTitle">Compassionate Care for Every Species</span>
+</h1>
+<p class="font-body-lg text-body-lg text-professional-white/90 mb-stack-lg max-w-lg leading-relaxed">
+    <span data-i18n="home.heroDesc">At Gullan Veterinary Clinic, we blend modern medical excellence with empathetic professionalism for your domestic pets and livestock.</span>
+</p>
+<div class="flex flex-col sm:flex-row gap-stack-md">
+<a href="#appointments" data-button-id="hero_schedule_visit" class="bg-fresh-green text-on-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:scale-105 transition-all shadow-xl shadow-fresh-green/20 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">calendar_today</span>
+    <span data-i18n="home.scheduleVisit">Schedule Visit</span>
+</a>
+<a href="#services" data-button-id="hero_view_services" class="bg-professional-white/10 backdrop-blur-md border border-professional-white/30 text-professional-white px-8 py-4 rounded-xl font-label-md text-label-md hover:bg-professional-white/20 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">collections</span>
+    <span data-i18n="home.viewServices">View Services</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Animal Care Gallery Section -->
+<section class="py-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="text-center mb-stack-lg">
+<span class="text-fresh-green font-label-md tracking-widest uppercase text-caption mb-2 block" data-i18n="home.ourPatients">Our Patients</span>
+<h2 class="font-headline-md-mobile md:font-headline-md text-headline-md-mobile md:text-headline-md text-on-background mb-4" data-i18n="home.dedicatedCareTitle">Dedicated Animal Care</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto" data-i18n="home.dedicatedCareDesc">Explore our diverse range of care, from professional livestock management to gentle domestic pet treatment.</p>
+</div>
+<!-- Masonry-style Grid -->
+<div class="masonry-grid">
+<!-- Horse -->
+<div class="masonry-item group relative overflow-hidden rounded-2xl bg-white shadow-md soft-hover transition-all">
+<img data-image-id="gallery_horse" alt="Majestic horse in pasture" class="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" src="assets/images/horse.webp" loading="lazy" decoding="async" referrerpolicy="no-referrer"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-stack-md">
+<span class="text-white font-title-lg text-title-lg" data-i18n="home.equineCare">Equine Care</span>
+<p class="text-white/80 text-caption" data-i18n="home.equineCareDesc">Specialized large animal services</p>
+</div>
+</div>
+<!-- Dog (Domestic Pet) -->
+<div class="masonry-item group relative overflow-hidden rounded-2xl bg-white shadow-md soft-hover transition-all">
+<img data-image-id="gallery_dog" alt="Golden Retriever at clinic" class="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" src="assets/images/dog.webp" loading="lazy" decoding="async" referrerpolicy="no-referrer"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-stack-md">
+<span class="text-white font-title-lg text-title-lg" data-i18n="home.petWellness">Pet Wellness</span>
+<p class="text-white/80 text-caption" data-i18n="home.petWellnessDesc">Domestic diagnostics &amp; exams</p>
+</div>
+</div>
+<!-- Chicken -->
+<div class="masonry-item group relative overflow-hidden rounded-2xl bg-white shadow-md soft-hover transition-all">
+<img data-image-id="gallery_chicken" alt="Healthy chicken on farm" class="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" src="assets/images/chicken.webp" loading="lazy" decoding="async" referrerpolicy="no-referrer"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-stack-md">
+<span class="text-white font-title-lg text-title-lg" data-i18n="home.avianHealth">Avian Health</span>
+<p class="text-white/80 text-caption" data-i18n="home.avianHealthDesc">Farmyard poultry management</p>
+</div>
+</div>
+<!-- Cow -->
+<div class="masonry-item group relative overflow-hidden rounded-2xl bg-white shadow-md soft-hover transition-all">
+<img data-image-id="gallery_cow" alt="Healthy cow in pasture" class="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" src="assets/images/cow.webp" loading="lazy" decoding="async" referrerpolicy="no-referrer"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-stack-md">
+<span class="text-white font-title-lg text-title-lg" data-i18n="home.livestockMedicine">Livestock Medicine</span>
+<p class="text-white/80 text-caption" data-i18n="home.livestockMedicineDesc">Cattle herd health experts</p>
+</div>
+</div>
+<!-- Cat (Domestic Pet) -->
+<div class="masonry-item group relative overflow-hidden rounded-2xl bg-white shadow-md soft-hover transition-all">
+<img data-image-id="gallery_cat" alt="Cat on clinic table" class="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" src="assets/images/cat.webp" loading="lazy" decoding="async" referrerpolicy="no-referrer"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-stack-md">
+<span class="text-white font-title-lg text-title-lg" data-i18n="home.felineSpecialist">Feline Specialist</span>
+<p class="text-white/80 text-caption" data-i18n="home.felineSpecialistDesc">Stress-free feline treatment</p>
+</div>
+</div>
+<!-- Sheep -->
+<div class="masonry-item group relative overflow-hidden rounded-2xl bg-white shadow-md soft-hover transition-all">
+<img data-image-id="gallery_sheep" alt="Healthy sheep in field" class="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" src="assets/images/sheep.webp" loading="lazy" decoding="async" referrerpolicy="no-referrer"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-stack-md">
+<span class="text-white font-title-lg text-title-lg" data-i18n="home.ovineServices">Ovine Services</span>
+<p class="text-white/80 text-caption" data-i18n="home.ovineServicesDesc">Complete sheep care &amp; vaccination</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Section -->
+<section class="bg-surface-container-low py-stack-lg">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-2 md:grid-cols-4 gap-gutter text-center">
+<div>
+<div class="font-display-lg-mobile md:font-headline-md text-fresh-green mb-1">15k+</div>
+<div class="text-on-surface-variant font-label-md uppercase tracking-wider" data-i18n="home.patientsServed">Patients Served</div>
+</div>
+<div>
+<div class="font-display-lg-mobile md:font-headline-md text-fresh-green mb-1">12+</div>
+<div class="text-on-surface-variant font-label-md uppercase tracking-wider" data-i18n="home.expertVets">Expert Vets</div>
+</div>
+<div>
+<div class="font-display-lg-mobile md:font-headline-md text-fresh-green mb-1">20yr</div>
+<div class="text-on-surface-variant font-label-md uppercase tracking-wider" data-i18n="home.legacy">Legacy</div>
+</div>
+<div>
+<div class="font-display-lg-mobile md:font-headline-md text-fresh-green mb-1">4.9</div>
+<div class="text-on-surface-variant font-label-md uppercase tracking-wider" data-i18n="home.clientTrust">Client Trust</div>
+</div>
+</div>
+</section>
+<!-- Services Highlights -->
+<section class="py-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-col md:flex-row items-center gap-stack-lg">
+<div class="flex-1 relative order-2 md:order-1">
+<div class="relative rounded-2xl overflow-hidden shadow-2xl z-10">
+<img data-image-id="services_vet" alt="Professional Vet" class="w-full h-auto aspect-[4/5] object-cover" src="assets/images/vet.webp" loading="lazy" decoding="async" referrerpolicy="no-referrer"/>
+</div>
+<div class="absolute -bottom-6 -left-6 w-32 h-32 bg-soft-blue/20 rounded-full blur-3xl z-0"></div>
+<div class="absolute -top-6 -right-6 w-48 h-48 bg-fresh-green/10 rounded-full blur-2xl z-0"></div>
+</div>
+<div class="flex-1 order-1 md:order-2">
+<h2 class="font-headline-md-mobile md:font-headline-md text-headline-md-mobile md:text-headline-md text-on-background mb-stack-md leading-tight" data-i18n="home.professionalismTitle">Professionalism Meets Pure Compassion</h2>
+<p class="text-on-surface-variant text-body-lg mb-stack-md leading-relaxed" data-i18n="home.professionalismDesc">We understand that animals are family, whether they share your home or populate your farm. Our modern facility is built around high-end clinical precision and empathetic care.</p>
+<div class="space-y-stack-md mb-stack-lg">
+<div class="flex gap-4 p-5 rounded-xl bg-professional-white border border-light-gray hover:border-fresh-green transition-colors soft-hover group">
+<div class="h-12 w-12 shrink-0 bg-fresh-green/10 rounded-xl flex items-center justify-center group-hover:bg-fresh-green group-hover:text-white transition-all">
+<span class="material-symbols-outlined">health_and_safety</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-1" data-i18n="home.facilities">State-of-the-Art Facilities</h4>
+<p class="text-on-surface-variant text-caption" data-i18n="home.facilitiesDesc">Equipped with the latest imaging and surgical technology for precise treatment.</p>
+</div>
+</div>
+<div class="flex gap-4 p-5 rounded-xl bg-professional-white border border-light-gray hover:border-soft-blue transition-colors soft-hover group">
+<div class="h-12 w-12 shrink-0 bg-soft-blue/10 rounded-xl flex items-center justify-center group-hover:bg-soft-blue group-hover:text-white transition-all">
+<span class="material-symbols-outlined">diversity_3</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-1" data-i18n="home.specialistTeam">Passionate Specialist Team</h4>
+<p class="text-on-surface-variant text-caption" data-i18n="home.specialistTeamDesc">Highly trained veterinarians and technicians dedicated to animal wellness.</p>
+</div>
+</div>
+</div>
+<a href="#services" data-button-id="home_view_all_services" class="bg-on-background text-on-primary px-8 py-3.5 rounded-full font-label-md text-label-md hover:scale-105 transition-transform flex items-center gap-2">
+    <span data-i18n="home.viewAllServices">View All Services</span>
+    <span class="material-symbols-outlined">chevron_right</span>
+</a>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="my-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="bg-fresh-green rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-stack-lg relative overflow-hidden flex flex-col items-center text-center">
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+<h2 class="font-headline-md-mobile md:font-headline-md text-headline-md-mobile md:text-headline-md text-on-primary mb-stack-sm relative z-10" data-i18n="home.ctaTitle">Premium Care for Your Animals</h2>
+<p class="text-on-primary/80 max-w-xl mb-stack-lg relative z-10 leading-relaxed" data-i18n="home.ctaDesc">Experience the difference of a clinic that values both medical excellence and animal comfort. Book your visit online today.</p>
+<div class="flex flex-col sm:flex-row gap-stack-md relative z-10">
+<a href="#appointments" data-button-id="cta_book_visit" class="w-full sm:w-auto bg-professional-white text-fresh-green px-10 py-4 rounded-xl font-label-md text-label-md hover:shadow-xl hover:-translate-y-1 transition-all font-bold text-center">
+    <span data-i18n="home.bookYourVisit">Book Your Visit</span>
+</a>
+<a href="#contact" data-button-id="cta_call" class="w-full sm:w-auto border border-on-primary/40 text-on-primary px-10 py-4 rounded-xl font-label-md text-label-md hover:bg-on-primary/10 transition-all text-center">
+    <span data-i18n="home.callUs">Call (555) VET-CARE</span>
+</a>
+</div>
+</div>
+</section>
+</section>
+
+<!-- ============================================ SERVICES SECTION ============================================ -->
+<section id="services" class="py-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<h2 class="font-headline-md-mobile md:font-headline-md text-headline-md-mobile md:text-headline-md text-on-background mb-stack-md" data-i18n="services.title">Our Specialized Services</h2>
+<p class="text-on-surface-variant mb-stack-lg max-w-2xl" data-i18n="services.heroDesc">Empathetic clinical excellence for every creature, from domestic pets to majestic livestock.</p>
+
+<!-- Featured Service Card -->
+<div class="bg-professional-white rounded-2xl p-5 md:p-8 border border-light-gray shadow-sm mb-8">
+<div class="flex flex-col sm:flex-row sm:justify-between items-start gap-3 mb-6">
+<div class="bg-surface-container text-fresh-green p-5 rounded-2xl">
+<span class="material-symbols-outlined text-[36px]">medical_services</span>
+</div>
+<span class="bg-primary-fixed text-fresh-green px-4 py-1.5 rounded-full text-caption font-bold" data-i18n="services.mostPopular">MOST POPULAR</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4" data-i18n="services.companionCheckups">Companion Checkups</h3>
+<p class="font-body-md text-on-surface-variant mb-6" data-i18n="services.companionCheckupsDesc">Comprehensive wellness examinations to ensure your companion stays healthy and vibrant throughout their life.</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container-low text-on-surface-variant px-4 py-2 rounded-xl text-caption" data-i18n="services.wellnessExam">Wellness Exam</span>
+<span class="bg-surface-container-low text-on-surface-variant px-4 py-2 rounded-xl text-caption" data-i18n="services.nutritionAdvice">Nutrition Advice</span>
+<span class="bg-surface-container-low text-on-surface-variant px-4 py-2 rounded-xl text-caption" data-i18n="services.dentalHealth">Dental Health</span>
+</div>
+</div>
+
+<!-- Service Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Vaccination -->
+<div class="bg-professional-white border border-light-gray rounded-2xl p-5 md:p-8">
+<div class="bg-soft-blue/10 text-soft-blue p-4 rounded-2xl w-fit mb-4">
+<span class="material-symbols-outlined text-[28px]">vaccines</span>
+</div>
+<h4 class="font-title-lg text-on-surface mb-3" data-i18n="services.vaccination">Vaccination</h4>
+<p class="text-on-surface-variant text-body-md" data-i18n="services.vaccinationDesc">Essential immunizations tailored to your animal's lifestyle and environment.</p>
+</div>
+<!-- Emergency -->
+<div class="bg-error-container/5 border border-error/10 rounded-2xl p-5 md:p-8">
+<div class="bg-error/10 text-error p-4 rounded-2xl w-fit mb-4">
+<span class="material-symbols-outlined text-[28px]">emergency</span>
+</div>
+<h4 class="font-title-lg text-on-surface mb-3" data-i18n="services.emergencyCare">Emergency Care</h4>
+<p class="text-on-surface-variant text-body-md" data-i18n="services.emergencyCareDesc">Critical 24/7 support for urgent medical situations.</p>
+</div>
+</div>
+</section>
+
+<!-- ============================================ APPOINTMENTS SECTION ============================================ -->
+<section id="appointments" class="py-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<h2 class="font-headline-md-mobile md:font-headline-md text-headline-md-mobile md:text-headline-md text-on-background mb-4" data-i18n="appointments.title">Book an Appointment</h2>
+<p class="text-on-surface-variant mb-stack-lg max-w-2xl" data-i18n="appointments.heroDesc">Trust our empathetic professionals with your pet's health.</p>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-8">
+<!-- Info Cards -->
+<div class="bg-professional-white border border-light-gray p-gutter rounded-xl">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-surface-container-low text-fresh-green p-3 rounded-lg">
+<span class="material-symbols-outlined">health_and_safety</span>
+</div>
+<h4 class="font-title-lg text-title-lg text-primary" data-i18n="appointments.expertCare">Expert Care</h4>
+</div>
+<p class="text-on-surface-variant text-body-md" data-i18n="appointments.expertCareDesc">Our clinic uses the latest clinical technology combined with empathetic professionalism.</p>
+</div>
+
+<div class="bg-professional-white border border-light-gray p-gutter rounded-xl">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-surface-container-low text-soft-blue p-3 rounded-lg">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+<h4 class="font-title-lg text-title-lg text-primary" data-i18n="appointments.clinicHours">Clinic Hours</h4>
+</div>
+<ul class="text-on-surface-variant text-body-md space-y-1">
+<li class="flex justify-between"><span data-i18n="appointments.mondayFriday">Mon - Fri</span><span>8:00 - 19:00</span></li>
+<li class="flex justify-between"><span data-i18n="appointments.saturday">Saturday</span><span>9:00 - 15:00</span></li>
+<li class="flex justify-between"><span data-i18n="appointments.sunday">Sunday</span><span data-i18n="appointments.emergencyOnly">Emergency Only</span></li>
+</ul>
+</div>
+</div>
+
+<!-- Booking Form -->
+<div class="bg-professional-white border border-light-gray p-5 md:p-8 rounded-xl">
+<form id="appointment-form" class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="appointments.fullName">Full Name</label>
+<input name="full_name" class="w-full px-4 py-3 bg-light-gray border-none rounded-lg font-body-md form-input-focus" placeholder="John Doe" type="text" data-i18n-placeholder="appointments.fullName" required/>
+</div>
+
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="appointments.emailAddress">Email Address</label>
+<input name="email" class="w-full px-4 py-3 bg-light-gray border-none rounded-lg font-body-md form-input-focus" placeholder="john@example.com" type="email" data-i18n-placeholder="appointments.emailAddress" required/>
+</div>
+
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="appointments.phoneNumber">Phone Number</label>
+<input name="phone" class="w-full px-4 py-3 bg-light-gray border-none rounded-lg font-body-md form-input-focus" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="appointments.animalType">Animal Type</label>
+<select name="animal_type" class="w-full px-4 py-3 bg-light-gray border-none rounded-lg font-body-md form-input-focus">
+<option data-i18n="appointments.selectPetType">Select pet type</option>
+<option data-i18n="appointments.canine">Canine (Dog)</option>
+<option data-i18n="appointments.feline">Feline (Cat)</option>
+<option data-i18n="appointments.avian">Avian (Bird)</option>
+<option data-i18n="appointments.exotic">Exotic</option>
+<option data-i18n="appointments.livestock">Livestock</option>
+</select>
+</div>
+
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="appointments.preferredDate">Preferred Date</label>
+<input name="preferred_date" class="w-full px-4 py-3 bg-light-gray border-none rounded-lg font-body-md form-input-focus" type="date"/>
+</div>
+
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="appointments.preferredTime">Preferred Time</label>
+<input name="preferred_time" class="w-full px-4 py-3 bg-light-gray border-none rounded-lg font-body-md form-input-focus" type="time"/>
+</div>
+
+<div class="md:col-span-2 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="appointments.messageNotes">Message / Notes</label>
+<textarea name="message" class="w-full px-4 py-3 bg-light-gray border-none rounded-lg font-body-md form-input-focus resize-none" rows="4" data-i18n-placeholder="appointments.messageNotes"></textarea>
+</div>
+
+<div class="md:col-span-2">
+<button class="w-full bg-fresh-green text-on-primary px-8 py-4 rounded-xl font-label-md hover:scale-[1.02] transition-all" type="submit">
+<span class="material-symbols-outlined" style="vertical-align: middle;">check_circle</span>
+<span data-i18n="appointments.confirmBooking">Confirm Booking Request</span>
+</button>
+<p class="mt-4 text-caption text-on-surface-variant" data-i18n="appointments.privacyPolicy">By submitting, you agree to our privacy policy and terms of service.</p>
+<p id="appointment-feedback" class="mt-2 text-caption hidden" aria-live="polite"></p>
+</div>
+</form>
+</div>
+</section>
+
+<!-- ============================================ CONTACT SECTION ============================================ -->
+<section id="contact" class="py-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<h2 class="font-headline-md-mobile md:font-headline-md text-headline-md-mobile md:text-headline-md text-on-background mb-4" data-i18n="contact.title">Contact Us</h2>
+<p class="text-on-surface-variant mb-stack-lg max-w-2xl" data-i18n="contact.heroDesc">Our team of empathetic professionals is here to support you and your pet.</p>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+<!-- Address -->
+<div class="bg-professional-white border border-light-gray p-6 rounded-xl">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-surface-container rounded-full h-10 w-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-soft-blue">location_on</span>
+</div>
+<h4 class="font-title-lg text-title-lg text-primary" data-i18n="contact.clinicAddress">Clinic Address</h4>
+</div>
+<p class="text-on-surface-variant pl-12 text-body-md" data-i18n="contact.address">123 Pet Wellness Ave<br/>Green District, Vet City 50421</p>
+</div>
+
+<!-- Phone -->
+<div class="bg-professional-white border border-light-gray p-6 rounded-xl">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-surface-container rounded-full h-10 w-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-soft-blue">call</span>
+</div>
+<h4 class="font-title-lg text-title-lg text-primary" data-i18n="contact.callUs">Call Us</h4>
+</div>
+<p class="text-on-surface-variant pl-12 text-body-md" data-i18n="contact.phone"><a href="tel:+15550123456" class="text-soft-blue hover:text-fresh-green underline">+1 (555) 012-3456</a><br/>Mon - Sat: 8:00 AM - 8:00 PM</p>
+</div>
+
+<!-- Email -->
+<div class="bg-professional-white border border-light-gray p-6 rounded-xl">
+<div class="flex items-center gap-3 mb-4">
+<div class="bg-surface-container rounded-full h-10 w-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-soft-blue">mail</span>
+</div>
+<h4 class="font-title-lg text-title-lg text-primary" data-i18n="contact.emailSupport">Email Support</h4>
+</div>
+<p class="text-on-surface-variant pl-12 text-body-md" data-i18n="contact.email"><a href="mailto:info@gullanclinic.com" class="text-soft-blue hover:text-fresh-green underline">info@gullanclinic.com</a><br/>General &amp; Medical Inquiries</p>
+</div>
+</div>
+
+<!-- Contact Form -->
+<div class="bg-professional-white border border-light-gray p-5 md:p-8 rounded-xl">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-6" data-i18n="contact.sendMessage">Send a Message</h3>
+<form id="contact-form" class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="contact.petParentName">Pet Parent Name</label>
+<input name="full_name" class="bg-light-gray border-none rounded-lg p-base form-input-focus font-body-md" type="text" data-i18n-placeholder="contact.namePlaceholder" required/>
+</div>
+
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="contact.emailAddressLabel">Email Address</label>
+<input name="email" class="bg-light-gray border-none rounded-lg p-base form-input-focus font-body-md" type="email" data-i18n-placeholder="contact.emailPlaceholder" required/>
+</div>
+
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="contact.petsName">Pet's Name</label>
+<input name="pet_name" class="bg-light-gray border-none rounded-lg p-base form-input-focus font-body-md" type="text" data-i18n-placeholder="contact.petNamePlaceholder"/>
+</div>
+
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="contact.serviceInquiry">Service Inquiry</label>
+<select name="service_inquiry" class="bg-light-gray border-none rounded-lg p-base form-input-focus font-body-md">
+<option value="General Wellness" data-i18n="contact.generalWellness">General Wellness</option>
+<option value="Surgery &amp; Recovery" data-i18n="contact.surgeryRecovery">Surgery &amp; Recovery</option>
+<option value="Dental Care" data-i18n="contact.dentalCare">Dental Care</option>
+<option value="Diagnostics" data-i18n="contact.diagnostics">Diagnostics</option>
+</select>
+</div>
+
+<div class="md:col-span-2 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface-variant" data-i18n="contact.yourMessage">Your Message</label>
+<textarea name="message" class="bg-light-gray border-none rounded-lg p-base form-input-focus font-body-md" rows="4" data-i18n-placeholder="contact.messagePlaceholder" required></textarea>
+</div>
+
+<div class="md:col-span-2">
+<button class="w-full bg-fresh-green text-on-primary py-4 rounded-lg font-label-md hover:scale-[1.02] transition-all" type="submit">
+<span class="material-symbols-outlined" style="vertical-align: middle;">send</span>
+<span data-i18n="contact.submitInquiry">Submit Inquiry</span>
+</button>
+<p id="contact-feedback" class="mt-2 text-caption hidden" aria-live="polite"></p>
+</div>
+</form>
+</div>
+</section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-clinical-bg border-t border-light-gray w-full py-stack-lg px-margin-mobile md:px-margin-desktop flex flex-col items-center gap-stack-md mx-auto">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-fresh-green" style="font-size: 28px;">pets</span>
+<span class="text-title-lg font-title-lg text-fresh-green" data-i18n="nav.brand">GULLAN</span>
+</div>
+<div class="flex flex-wrap justify-center gap-gutter">
+<a class="text-on-surface-variant hover:text-fresh-green transition-colors font-label-md text-label-md" href="#home" data-i18n="nav.home">Home</a>
+<a class="text-on-surface-variant hover:text-fresh-green transition-colors font-label-md text-label-md" href="#services" data-i18n="nav.services">Services</a>
+<a class="text-on-surface-variant hover:text-fresh-green transition-colors font-label-md text-label-md" href="#appointments" data-i18n="nav.appointments">Appointments</a>
+<a class="text-on-surface-variant hover:text-fresh-green transition-colors font-label-md text-label-md" href="#contact" data-i18n="nav.contact">Contact</a>
+</div>
+<div class="flex items-center justify-center gap-4 mt-1">
+<a href="#" data-button-id="social_whatsapp" class="text-on-surface-variant hover:text-fresh-green transition-colors" aria-label="WhatsApp" title="WhatsApp"><span class="material-symbols-outlined">forum</span></a>
+<a href="#" data-button-id="social_instagram" class="text-on-surface-variant hover:text-fresh-green transition-colors" aria-label="Instagram" title="Instagram"><span class="material-symbols-outlined">photo_camera</span></a>
+<a href="#" data-button-id="social_facebook" class="text-on-surface-variant hover:text-fresh-green transition-colors" aria-label="Facebook" title="Facebook"><span class="material-symbols-outlined">public</span></a>
+</div>
+<p class="text-on-surface-variant text-caption mt-base" data-i18n="home.footerDesc">© 2024 Gullan Veterinary Clinic. All rights reserved.</p>
+</footer>
+<script>
+    (function () {
+        const toggleButton = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (!toggleButton || !mobileMenu) return;
+
+        function closeMenu() {
+            mobileMenu.classList.add('hidden');
+            toggleButton.setAttribute('aria-expanded', 'false');
+        }
+
+        toggleButton.addEventListener('click', function () {
+            const isHidden = mobileMenu.classList.toggle('hidden');
+            toggleButton.setAttribute('aria-expanded', String(!isHidden));
+        });
+
+        mobileMenu.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('click', closeMenu);
+        });
+
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768) {
+                closeMenu();
+            }
+        });
+    })();
+
+    (function () {
+        if (!('IntersectionObserver' in window)) {
+            return;
+        }
+
+        const revealTargets = document.querySelectorAll([
+            '#home .masonry-item',
+            '#services .bg-professional-white',
+            '#appointments .bg-professional-white',
+            '#contact .bg-professional-white',
+            '#home .bg-surface-container-low',
+            '#home .soft-hover'
+        ].join(','));
+
+        revealTargets.forEach(function (element) {
+            element.classList.add('reveal-on-scroll');
+        });
+
+        const observer = new IntersectionObserver(function (entries, obs) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) {
+                    return;
+                }
+                entry.target.classList.add('is-visible');
+                obs.unobserve(entry.target);
+            });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
+
+        revealTargets.forEach(function (element) {
+            observer.observe(element);
+        });
+    })();
+
+    (function () {
+        const slides = Array.from(document.querySelectorAll('.hero-slider-item'));
+        if (slides.length <= 1) {
+            return;
+        }
+
+        let activeIndex = 0;
+        const intervalMs = 5000;
+
+        function showSlide(nextIndex) {
+            slides.forEach(function (slide, index) {
+                slide.classList.toggle('is-active', index === nextIndex);
+            });
+            activeIndex = nextIndex;
+        }
+
+        showSlide(activeIndex);
+        setInterval(function () {
+            const nextIndex = (activeIndex + 1) % slides.length;
+            showSlide(nextIndex);
+        }, intervalMs);
+    })();
+</script>
+</body>
+</html>
