@@ -1071,6 +1071,25 @@
         }
     }
 
+    async function uploadImageFile(file, progressLabel) {
+        if (!file) return null;
+        const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+        const filename = Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+        const path = 'uploads/' + filename;
+        if (progressLabel) progressLabel.textContent = 'Uploading…';
+        const { error: upError } = await client.storage
+            .from('clinic-images')
+            .upload(path, file, { upsert: true, contentType: file.type });
+        if (upError) {
+            if (progressLabel) progressLabel.textContent = 'Upload failed';
+            setMessage('Upload failed: ' + upError.message, true);
+            return null;
+        }
+        const { data: urlData } = client.storage.from('clinic-images').getPublicUrl(path);
+        if (progressLabel) progressLabel.textContent = 'Upload from device';
+        return urlData.publicUrl;
+    }
+
     function initMediaManager() {
         const imageSearch = document.getElementById('image-search');
         const imageEditor = document.getElementById('image-editor');
@@ -1132,7 +1151,8 @@
                         '<div class="grid grid-cols-1 lg:grid-cols-[1.2fr_.8fr] gap-4 mt-4">',
                         '<div>',
                         '<label class="block text-sm font-semibold text-slate-700 mb-2">Image URL or path</label>',
-                        '<input type="text" class="image-value-input w-full" data-image-input="' + escapeHtml(item.key) + '" value="' + safeCurrent + '" placeholder="https://... or assets/images/..." />',
+                        '<input type="text" class="image-value-input w-full" data-image-input="' + escapeHtml(item.key) + '" value="' + safeCurrent + '" placeholder="https://... or upload below" />',
+                        '<label class="btn-ghost mt-2 inline-flex items-center gap-2 cursor-pointer"><span style="font-size:16px">&#8679;</span><span class="card-upload-label" data-upload-label="' + escapeHtml(item.key) + '">Upload from device</span><input type="file" accept="image/*" capture="environment" class="sr-only" data-image-file="' + escapeHtml(item.key) + '" /></label>',
                         '<p class="text-xs text-slate-500 mt-2">Default: ' + safeDefault + '</p>',
                         '</div>',
                         '<div class="rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 min-h-40">',
@@ -1157,6 +1177,20 @@
         imageSearch.addEventListener('input', () => {
             imageSearchQuery = imageSearch.value;
             renderImageStudio();
+        });
+
+        imageEditor.addEventListener('change', async (event) => {
+            const fileInput = event.target.closest('[data-image-file]');
+            if (!fileInput || !fileInput.files || !fileInput.files[0]) return;
+            const key = fileInput.dataset.imageFile;
+            const label = imageEditor.querySelector('[data-upload-label="' + CSS.escape(key) + '"]');
+            const publicUrl = await uploadImageFile(fileInput.files[0], label);
+            if (!publicUrl) return;
+            const textInput = imageEditor.querySelector('[data-image-input="' + CSS.escape(key) + '"]');
+            if (textInput) textInput.value = publicUrl;
+            const preview = imageEditor.querySelector('[data-image-preview="' + CSS.escape(key) + '"]');
+            if (preview) preview.src = publicUrl;
+            fileInput.value = '';
         });
 
         imageEditor.addEventListener('input', (event) => {
@@ -1242,8 +1276,24 @@
             setMessage('Image override removed.', false);
         });
 
+        const quickFileInput = document.getElementById('quick-image-file');
+        const quickUploadLabel = document.getElementById('quick-upload-label');
+        if (quickFileInput) {
+            quickFileInput.addEventListener('change', async () => {
+                if (!quickFileInput.files || !quickFileInput.files[0]) return;
+                const publicUrl = await uploadImageFile(quickFileInput.files[0], quickUploadLabel);
+                if (!publicUrl) return;
+                imageUrl.value = publicUrl;
+                quickFileInput.value = '';
+            });
+        }
+
         document.getElementById('image-form').addEventListener('submit', async (event) => {
             event.preventDefault();
+            if (!imageUrl.value.trim()) {
+                setMessage('Please enter a URL or upload an image first.', true);
+                return;
+            }
             const safeUrl = sanitizePathOrUrl(imageUrl.value);
             if (!safeUrl) {
                 setMessage('Invalid image URL/path. Use https://, /, #, or a local path.', true);
