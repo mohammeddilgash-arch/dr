@@ -30,6 +30,7 @@
         { key: 'home_view_all_services', label: 'Home View All Services' },
         { key: 'cta_book_visit', label: 'CTA Book Your Visit' },
         { key: 'cta_call', label: 'CTA Call' },
+        { key: 'contact_address_map', label: 'Contact Address Map Link' },
         { key: 'social_whatsapp', label: 'Footer WhatsApp' },
         { key: 'social_instagram', label: 'Footer Instagram' },
         { key: 'social_facebook', label: 'Footer Facebook' }
@@ -259,6 +260,22 @@
         }
 
         return '';
+    }
+
+    function normalizeButtonHref(key, rawValue) {
+        const raw = String(rawValue || '').trim();
+        if (!raw) {
+            return '';
+        }
+
+        if (key === 'social_whatsapp') {
+            const digits = raw.replace(/\D/g, '');
+            if (digits) {
+                return 'https://wa.me/' + digits;
+            }
+        }
+
+        return sanitizePathOrUrl(raw);
     }
 
     function escapeHtml(value) {
@@ -750,6 +767,7 @@
         const phoneDisplay = document.getElementById('quick-phone-display');
         const phoneDial = document.getElementById('quick-phone-dial');
         const emailInput = document.getElementById('quick-email');
+        const addressMap = document.getElementById('quick-address-map');
         const hoursEn = document.getElementById('quick-hours-en');
         const hoursAr = document.getElementById('quick-hours-ar');
         const hoursKu = document.getElementById('quick-hours-ku');
@@ -761,7 +779,7 @@
         const socialFacebook = document.getElementById('quick-social-facebook');
         const reloadBtn = document.getElementById('quick-business-reload');
 
-        if (!phoneDisplay || !phoneDial || !emailInput || !hoursEn || !hoursAr || !hoursKu || !monFri || !sat || !sun || !socialWhatsapp || !socialInstagram || !socialFacebook || !reloadBtn) {
+        if (!phoneDisplay || !phoneDial || !emailInput || !addressMap || !hoursEn || !hoursAr || !hoursKu || !monFri || !sat || !sun || !socialWhatsapp || !socialInstagram || !socialFacebook || !reloadBtn) {
             return;
         }
 
@@ -783,6 +801,7 @@
             sat.value = getEffectiveContentValue('en', 'appointments.saturdayHours') || '';
             sun.value = getEffectiveContentValue('en', 'appointments.sundayHours') || '';
 
+            addressMap.value = buttonOverrides.contact_address_map?.href || '';
             socialWhatsapp.value = buttonOverrides.social_whatsapp?.href || '';
             socialInstagram.value = buttonOverrides.social_instagram?.href || '';
             socialFacebook.value = buttonOverrides.social_facebook?.href || '';
@@ -820,6 +839,12 @@
                 social_facebook: socialFacebook.value.trim()
             };
 
+            const mapHref = sanitizePathOrUrl(addressMap.value);
+            if (addressMap.value.trim() && !mapHref) {
+                setMessage('Clinic map URL is invalid. Use a full https:// Google Maps link.', true);
+                return;
+            }
+
             const defaultEmailTailByLang = {
                 en: 'General & Medical Inquiries',
                 ar: 'استفسارات عامة وطبية',
@@ -854,8 +879,17 @@
                     new_tab: false
                 };
 
+                if (mapHref) {
+                    buttonOverrides.contact_address_map = {
+                        href: mapHref,
+                        new_tab: true
+                    };
+                } else {
+                    delete buttonOverrides.contact_address_map;
+                }
+
                 Object.entries(socialCandidates).forEach(([key, raw]) => {
-                    const safeHref = sanitizePathOrUrl(raw);
+                    const safeHref = normalizeButtonHref(key, raw);
                     if (!safeHref) {
                         delete buttonOverrides[key];
                         return;
@@ -1332,7 +1366,7 @@
 
         document.getElementById('button-form').addEventListener('submit', async (event) => {
             event.preventDefault();
-            const safeHref = sanitizePathOrUrl(buttonHref.value);
+            const safeHref = normalizeButtonHref(buttonKey.value, buttonHref.value);
             if (!safeHref) {
                 setMessage('Invalid button href. Use #anchor, /path, https://, or local path.', true);
                 return;

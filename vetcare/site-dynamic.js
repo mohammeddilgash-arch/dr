@@ -39,6 +39,7 @@
         home_view_all_services: '[data-button-id="home_view_all_services"]',
         cta_book_visit: '[data-button-id="cta_book_visit"]',
         cta_call: '[data-button-id="cta_call"]',
+        contact_address_map: '[data-button-id="contact_address_map"]',
         social_whatsapp: '[data-button-id="social_whatsapp"]',
         social_instagram: '[data-button-id="social_instagram"]',
         social_facebook: '[data-button-id="social_facebook"]'
@@ -327,7 +328,13 @@
                 return;
             }
 
-            const href = sanitizePathOrUrl(config.href);
+            let href = sanitizePathOrUrl(config.href);
+            if (key === 'social_whatsapp' && !/^https?:\/\//i.test(href)) {
+                const digits = String(config.href || '').replace(/\D/g, '');
+                if (digits) {
+                    href = 'https://wa.me/' + digits;
+                }
+            }
             const openInNewTab = config.new_tab === true;
             if (!href) {
                 return;
