@@ -991,11 +991,13 @@
         const brandingForm = document.getElementById('branding-form');
         const brandingLogoUrl = document.getElementById('branding-logo-url');
         const brandingLogoFile = document.getElementById('branding-logo-file');
+        const brandingLogoWidth = document.getElementById('branding-logo-width');
+        const brandingLogoWidthValue = document.getElementById('branding-logo-width-value');
         const brandingUploadLabel = document.getElementById('branding-upload-label');
         const brandingLoadBtn = document.getElementById('branding-load');
         const brandingDeleteBtn = document.getElementById('branding-delete');
 
-        if (brandingForm && brandingLogoUrl && brandingLogoFile && brandingUploadLabel && brandingLoadBtn && brandingDeleteBtn) {
+        if (brandingForm && brandingLogoUrl && brandingLogoFile && brandingLogoWidth && brandingLogoWidthValue && brandingUploadLabel && brandingLoadBtn && brandingDeleteBtn) {
             brandingLogoFile.addEventListener('change', async () => {
                 if (!brandingLogoFile.files || !brandingLogoFile.files[0]) {
                     return;
@@ -1012,9 +1014,14 @@
                 brandingLogoFile.value = '';
             });
 
+            brandingLogoWidth.addEventListener('input', () => {
+                setBrandingWidthValue(brandingLogoWidth.value);
+            });
+
             brandingLoadBtn.addEventListener('click', async () => {
                 const branding = await getSiteSetting('branding');
                 brandingLogoUrl.value = branding.logo_url || '';
+                setBrandingWidthValue(branding.logo_width_px || 96);
                 setBrandingPreview(branding.logo_url || '');
                 setMessage('Branding values reloaded.', false);
             });
@@ -1023,6 +1030,7 @@
                 const currentBranding = await getSiteSetting('branding');
                 const nextBranding = Object.assign({}, currentBranding);
                 delete nextBranding.logo_url;
+                delete nextBranding.logo_width_px;
 
                 const { error } = await upsertSiteSetting('branding', nextBranding);
                 if (error) {
@@ -1031,6 +1039,7 @@
                 }
 
                 brandingLogoUrl.value = '';
+                setBrandingWidthValue(96);
                 setBrandingPreview('');
                 setMessage('Custom logo removed.', false);
             });
@@ -1045,7 +1054,10 @@
                 }
 
                 const currentBranding = await getSiteSetting('branding');
-                const nextBranding = Object.assign({}, currentBranding, { logo_url: safeUrl || '' });
+                const nextBranding = Object.assign({}, currentBranding, {
+                    logo_url: safeUrl || '',
+                    logo_width_px: clampNumber(brandingLogoWidth.value, 50, 300, 96)
+                });
                 const { error } = await upsertSiteSetting('branding', nextBranding);
 
                 if (error) {
@@ -1054,6 +1066,7 @@
                 }
 
                 setBrandingPreview(nextBranding.logo_url);
+                setBrandingWidthValue(nextBranding.logo_width_px);
                 setMessage('Branding saved.', false);
             });
         }
@@ -1128,8 +1141,12 @@
 
         const brandingData = await getSiteSetting('branding');
         const brandingLogoUrl = document.getElementById('branding-logo-url');
+        const brandingLogoWidth = document.getElementById('branding-logo-width');
         if (brandingLogoUrl) {
             brandingLogoUrl.value = brandingData.logo_url || '';
+        }
+        if (brandingLogoWidth) {
+            setBrandingWidthValue(brandingData.logo_width_px || 96);
         }
         setBrandingPreview(brandingData.logo_url || '');
     }
@@ -1154,6 +1171,58 @@
             .upsert({ key: key, value: value }, { onConflict: 'key' });
     }
 
+    function clampNumber(value, min, max, fallback) {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) {
+            return fallback;
+        }
+        return Math.min(max, Math.max(min, parsed));
+    }
+
+    async function normalizePngFile(file) {
+        const signature = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+        const pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
+        const validSignature = pngSignature.every((byte, index) => signature[index] === byte);
+        if (!validSignature) {
+            throw new Error('The selected file is not a valid PNG image.');
+        }
+
+        const objectUrl = URL.createObjectURL(file);
+        try {
+            const image = await new Promise((resolve, reject) => {
+                const element = new Image();
+                element.onload = () => resolve(element);
+                element.onerror = () => reject(new Error('The PNG image could not be read.'));
+                element.src = objectUrl;
+            });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = image.naturalWidth || image.width;
+            canvas.height = image.naturalHeight || image.height;
+            const context = canvas.getContext('2d');
+            if (!context) {
+                throw new Error('Canvas is not available for PNG conversion.');
+            }
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0);
+
+            const blob = await new Promise((resolve, reject) => {
+                canvas.toBlob((result) => {
+                    if (!result) {
+                        reject(new Error('Unable to convert the logo to PNG.'));
+                        return;
+                    }
+                    resolve(result);
+                }, 'image/png');
+            });
+
+            return new File([blob], file.name.replace(/\.[^.]+$/, '.png'), { type: 'image/png' });
+        } finally {
+            URL.revokeObjectURL(objectUrl);
+        }
+    }
+
     function setBrandingPreview(url) {
         const preview = document.getElementById('branding-logo-preview');
         const emptyState = document.getElementById('branding-logo-empty');
@@ -1173,6 +1242,19 @@
         preview.removeAttribute('src');
         preview.classList.add('hidden');
         emptyState.classList.remove('hidden');
+    }
+
+    function setBrandingWidthValue(width) {
+        const widthInput = document.getElementById('branding-logo-width');
+        const widthValue = document.getElementById('branding-logo-width-value');
+        const safeWidth = clampNumber(width, 50, 300, 96);
+
+        if (widthInput) {
+            widthInput.value = String(safeWidth);
+        }
+        if (widthValue) {
+            widthValue.textContent = safeWidth + 'px';
+        }
     }
 
     function renderImageOverrides() {
@@ -1221,20 +1303,29 @@
             return null;
         }
 
-        const isPng = file.type === 'image/png' || /\.png$/i.test(file.name);
-        if (!isPng) {
-            setMessage('Logo upload only accepts PNG files.', true);
+        const path = 'branding/logo_' + Date.now() + '.png';
+        if (progressLabel) {
+            progressLabel.textContent = 'Validating PNG…';
+        }
+
+        let normalizedFile;
+        try {
+            normalizedFile = await normalizePngFile(file);
+        } catch (error) {
+            setMessage(error.message || 'Logo upload only accepts valid PNG files.', true);
+            if (progressLabel) {
+                progressLabel.textContent = 'Upload PNG logo';
+            }
             return null;
         }
 
-        const path = 'branding/logo_' + Date.now() + '.png';
         if (progressLabel) {
             progressLabel.textContent = 'Uploading PNG…';
         }
 
         const { error: upError } = await client.storage
             .from('clinic-images')
-            .upload(path, file, { upsert: true, contentType: 'image/png' });
+            .upload(path, normalizedFile, { upsert: true, contentType: 'image/png' });
 
         if (upError) {
             if (progressLabel) {

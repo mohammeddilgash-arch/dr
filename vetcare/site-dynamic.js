@@ -276,9 +276,19 @@
         applyThemeValue(value);
     }
 
+    function clampBrandWidth(value) {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) {
+            return 96;
+        }
+        return Math.min(300, Math.max(50, parsed));
+    }
+
     function applyBranding(value) {
         const branding = value && typeof value === 'object' ? value : {};
         const logoUrl = sanitizePathOrUrl(branding.logo_url || '');
+        const logoWidth = clampBrandWidth(branding.logo_width_px || 96);
+        document.documentElement.style.setProperty('--brand-logo-width', logoWidth + 'px');
         const logos = document.querySelectorAll('[data-brand-logo]');
         const fallbackIcons = document.querySelectorAll('[data-brand-fallback-icon]');
 
