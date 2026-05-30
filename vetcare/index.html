@@ -7,6 +7,7 @@
     <link rel="preload" as="image" href="assets/images/horse.webp" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet" id="dynamic-font"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <script src="translations.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -132,6 +133,67 @@
                 linear-gradient(180deg, #f8fbff 0%, #f3f8fc 40%, #eef5f8 100%);
             overflow-x: hidden;
         }
+        .brand-lockup {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 0;
+            text-decoration: none;
+        }
+        .brand-logo {
+            width: 3rem;
+            height: 3rem;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 18px rgba(15, 82, 56, 0.18));
+            flex-shrink: 0;
+        }
+        .brand-symbol {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            background: linear-gradient(145deg, rgba(45, 106, 79, 0.14), rgba(72, 149, 239, 0.08));
+            box-shadow: inset 0 0 0 1px rgba(45, 106, 79, 0.1);
+            flex-shrink: 0;
+        }
+        .brand-copy {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            line-height: 1;
+        }
+        .brand-kicker {
+            font-size: 0.64rem;
+            letter-spacing: 0.34em;
+            text-transform: uppercase;
+            color: rgba(13, 28, 46, 0.55);
+            margin-bottom: 0.28rem;
+            white-space: nowrap;
+        }
+        .brand-wordmark {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.55rem, 2.6vw, 2rem);
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #123627;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+        }
+        .brand-lockup--footer .brand-logo,
+        .brand-lockup--footer .brand-symbol {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+        .brand-lockup--footer .brand-kicker {
+            font-size: 0.58rem;
+            letter-spacing: 0.28em;
+        }
+        .brand-lockup--footer .brand-wordmark {
+            font-size: 1.5rem;
+        }
         body::before {
             content: '';
             position: fixed;
@@ -178,6 +240,15 @@
             right: 8%;
         }
         .hero-ambient--two {
+        @media (max-width: 767px) {
+            .brand-kicker {
+                display: none;
+            }
+            .brand-wordmark {
+                font-size: 1.45rem;
+                letter-spacing: 0.1em;
+            }
+        }
             width: 220px;
             height: 220px;
             background: rgba(72, 149, 239, 0.4);
@@ -255,8 +326,14 @@
 <nav class="w-full px-margin-mobile md:px-margin-desktop py-base max-w-container-max mx-auto z-50">
 <div class="flex justify-between items-center gap-3">
 <div class="flex items-center gap-base min-w-0">
-<span class="material-symbols-outlined text-fresh-green" style="font-size: 32px;">pets</span>
-<span class="text-title-lg font-title-lg text-fresh-green tracking-tight truncate" data-i18n="nav.brand">GULLAN</span>
+<a href="#home" class="brand-lockup min-w-0" aria-label="Gullan home">
+<img data-brand-logo class="brand-logo hidden" alt="Gullan logo" />
+<span class="material-symbols-outlined text-fresh-green brand-symbol" data-brand-fallback-icon style="font-size: 32px;">pets</span>
+<span class="brand-copy min-w-0">
+<span class="brand-kicker">Veterinary Clinic</span>
+<span class="brand-wordmark truncate" data-i18n="nav.brand" data-brand-name>GULLAN</span>
+</span>
+</a>
 </div>
 <div class="hidden md:flex items-center gap-gutter">
 <a class="text-fresh-green font-bold border-b-2 border-fresh-green pb-1 font-label-md text-label-md" href="#home" data-i18n="nav.home">Home</a>
@@ -689,8 +766,14 @@
 <!-- Footer -->
 <footer class="bg-clinical-bg border-t border-light-gray w-full py-stack-lg px-margin-mobile md:px-margin-desktop flex flex-col items-center gap-stack-md mx-auto">
 <div class="flex items-center gap-base">
-<span class="material-symbols-outlined text-fresh-green" style="font-size: 28px;">pets</span>
-<span class="text-title-lg font-title-lg text-fresh-green" data-i18n="nav.brand">GULLAN</span>
+<a href="#home" class="brand-lockup brand-lockup--footer" aria-label="Gullan home">
+<img data-brand-logo class="brand-logo hidden" alt="Gullan logo" />
+<span class="material-symbols-outlined text-fresh-green brand-symbol" data-brand-fallback-icon style="font-size: 28px;">pets</span>
+<span class="brand-copy">
+<span class="brand-kicker">Veterinary Clinic</span>
+<span class="brand-wordmark" data-i18n="nav.brand" data-brand-name>GULLAN</span>
+</span>
+</a>
 </div>
 <div class="flex flex-wrap justify-center gap-gutter">
 <a class="text-on-surface-variant hover:text-fresh-green transition-colors font-label-md text-label-md" href="#home" data-i18n="nav.home">Home</a>

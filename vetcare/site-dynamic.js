@@ -276,6 +276,37 @@
         applyThemeValue(value);
     }
 
+    function applyBranding(value) {
+        const branding = value && typeof value === 'object' ? value : {};
+        const logoUrl = sanitizePathOrUrl(branding.logo_url || '');
+        const logos = document.querySelectorAll('[data-brand-logo]');
+        const fallbackIcons = document.querySelectorAll('[data-brand-fallback-icon]');
+
+        logos.forEach((logo) => {
+            if (logoUrl) {
+                logo.setAttribute('src', logoUrl);
+                logo.classList.remove('hidden');
+            } else {
+                logo.removeAttribute('src');
+                logo.classList.add('hidden');
+            }
+        });
+
+        fallbackIcons.forEach((icon) => {
+            icon.classList.toggle('hidden', Boolean(logoUrl));
+        });
+    }
+
+    async function loadBranding() {
+        const value = await loadSettingObject('branding');
+        if (!value) {
+            applyBranding({});
+            return;
+        }
+
+        applyBranding(value);
+    }
+
     async function loadSectionVisibility() {
         const value = await loadSettingObject('sections_visibility');
         if (!value) {
@@ -524,6 +555,7 @@
 
     async function boot() {
         const startupTasks = [
+            loadBranding(),
             loadTheme(),
             loadSectionVisibility(),
             loadImageOverrides(),

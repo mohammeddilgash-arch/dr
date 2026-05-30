@@ -988,6 +988,76 @@
     }
 
     function initThemeForm() {
+        const brandingForm = document.getElementById('branding-form');
+        const brandingLogoUrl = document.getElementById('branding-logo-url');
+        const brandingLogoFile = document.getElementById('branding-logo-file');
+        const brandingUploadLabel = document.getElementById('branding-upload-label');
+        const brandingLoadBtn = document.getElementById('branding-load');
+        const brandingDeleteBtn = document.getElementById('branding-delete');
+
+        if (brandingForm && brandingLogoUrl && brandingLogoFile && brandingUploadLabel && brandingLoadBtn && brandingDeleteBtn) {
+            brandingLogoFile.addEventListener('change', async () => {
+                if (!brandingLogoFile.files || !brandingLogoFile.files[0]) {
+                    return;
+                }
+
+                const publicUrl = await uploadPngLogoFile(brandingLogoFile.files[0], brandingUploadLabel);
+                if (!publicUrl) {
+                    brandingLogoFile.value = '';
+                    return;
+                }
+
+                brandingLogoUrl.value = publicUrl;
+                setBrandingPreview(publicUrl);
+                brandingLogoFile.value = '';
+            });
+
+            brandingLoadBtn.addEventListener('click', async () => {
+                const branding = await getSiteSetting('branding');
+                brandingLogoUrl.value = branding.logo_url || '';
+                setBrandingPreview(branding.logo_url || '');
+                setMessage('Branding values reloaded.', false);
+            });
+
+            brandingDeleteBtn.addEventListener('click', async () => {
+                const currentBranding = await getSiteSetting('branding');
+                const nextBranding = Object.assign({}, currentBranding);
+                delete nextBranding.logo_url;
+
+                const { error } = await upsertSiteSetting('branding', nextBranding);
+                if (error) {
+                    setMessage('Failed to remove logo.', true);
+                    return;
+                }
+
+                brandingLogoUrl.value = '';
+                setBrandingPreview('');
+                setMessage('Custom logo removed.', false);
+            });
+
+            brandingForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const safeUrl = sanitizePathOrUrl(brandingLogoUrl.value.trim());
+                if (brandingLogoUrl.value.trim() && !safeUrl) {
+                    setMessage('Brand logo URL is invalid.', true);
+                    return;
+                }
+
+                const currentBranding = await getSiteSetting('branding');
+                const nextBranding = Object.assign({}, currentBranding, { logo_url: safeUrl || '' });
+                const { error } = await upsertSiteSetting('branding', nextBranding);
+
+                if (error) {
+                    setMessage('Failed to save branding.', true);
+                    return;
+                }
+
+                setBrandingPreview(nextBranding.logo_url);
+                setMessage('Branding saved.', false);
+            });
+        }
+
         document.getElementById('theme-form').addEventListener('submit', async (event) => {
             event.preventDefault();
             const value = {
@@ -1055,6 +1125,13 @@
             document.getElementById('section-appointments').checked = sectionData.value.appointments !== false;
             document.getElementById('section-contact').checked = sectionData.value.contact !== false;
         }
+
+        const brandingData = await getSiteSetting('branding');
+        const brandingLogoUrl = document.getElementById('branding-logo-url');
+        if (brandingLogoUrl) {
+            brandingLogoUrl.value = brandingData.logo_url || '';
+        }
+        setBrandingPreview(brandingData.logo_url || '');
     }
 
     async function getSiteSetting(key) {
@@ -1075,6 +1152,27 @@
         return client
             .from('site_settings')
             .upsert({ key: key, value: value }, { onConflict: 'key' });
+    }
+
+    function setBrandingPreview(url) {
+        const preview = document.getElementById('branding-logo-preview');
+        const emptyState = document.getElementById('branding-logo-empty');
+        const safeUrl = sanitizePathOrUrl(url || '');
+
+        if (!preview || !emptyState) {
+            return;
+        }
+
+        if (safeUrl) {
+            preview.src = safeUrl;
+            preview.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            return;
+        }
+
+        preview.removeAttribute('src');
+        preview.classList.add('hidden');
+        emptyState.classList.remove('hidden');
     }
 
     function renderImageOverrides() {
@@ -1116,6 +1214,41 @@
         if (typeof renderImageStudio === 'function') {
             renderImageStudio();
         }
+    }
+
+    async function uploadPngLogoFile(file, progressLabel) {
+        if (!file) {
+            return null;
+        }
+
+        const isPng = file.type === 'image/png' || /\.png$/i.test(file.name);
+        if (!isPng) {
+            setMessage('Logo upload only accepts PNG files.', true);
+            return null;
+        }
+
+        const path = 'branding/logo_' + Date.now() + '.png';
+        if (progressLabel) {
+            progressLabel.textContent = 'Uploading PNG…';
+        }
+
+        const { error: upError } = await client.storage
+            .from('clinic-images')
+            .upload(path, file, { upsert: true, contentType: 'image/png' });
+
+        if (upError) {
+            if (progressLabel) {
+                progressLabel.textContent = 'Upload PNG logo';
+            }
+            setMessage('Logo upload failed: ' + upError.message, true);
+            return null;
+        }
+
+        const { data: urlData } = client.storage.from('clinic-images').getPublicUrl(path);
+        if (progressLabel) {
+            progressLabel.textContent = 'Upload PNG logo';
+        }
+        return urlData.publicUrl;
     }
 
     async function uploadImageFile(file, progressLabel) {
