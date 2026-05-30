@@ -768,6 +768,7 @@
         const phoneDial = document.getElementById('quick-phone-dial');
         const emailInput = document.getElementById('quick-email');
         const addressMap = document.getElementById('quick-address-map');
+        const addressText = document.getElementById('quick-address-text');
         const hoursEn = document.getElementById('quick-hours-en');
         const hoursAr = document.getElementById('quick-hours-ar');
         const hoursKu = document.getElementById('quick-hours-ku');
@@ -779,7 +780,7 @@
         const socialFacebook = document.getElementById('quick-social-facebook');
         const reloadBtn = document.getElementById('quick-business-reload');
 
-        if (!phoneDisplay || !phoneDial || !emailInput || !addressMap || !hoursEn || !hoursAr || !hoursKu || !monFri || !sat || !sun || !socialWhatsapp || !socialInstagram || !socialFacebook || !reloadBtn) {
+        if (!phoneDisplay || !phoneDial || !emailInput || !addressMap || !addressText || !hoursEn || !hoursAr || !hoursKu || !monFri || !sat || !sun || !socialWhatsapp || !socialInstagram || !socialFacebook || !reloadBtn) {
             return;
         }
 
@@ -801,6 +802,15 @@
             sat.value = getEffectiveContentValue('en', 'appointments.saturdayHours') || '';
             sun.value = getEffectiveContentValue('en', 'appointments.sundayHours') || '';
 
+            const addressEn = getEffectiveContentValue('en', 'contact.address');
+            const addressAr = getEffectiveContentValue('ar', 'contact.address');
+            const addressKu = getEffectiveContentValue('ku', 'contact.address');
+            const chosenAddress = addressEn || addressAr || addressKu || '';
+            addressText.value = String(chosenAddress)
+                .replace(/<br\s*\/?>/gi, '\n')
+                .replace(/<[^>]+>/g, '')
+                .trim();
+
             addressMap.value = buttonOverrides.contact_address_map?.href || '';
             socialWhatsapp.value = buttonOverrides.social_whatsapp?.href || '';
             socialInstagram.value = buttonOverrides.social_instagram?.href || '';
@@ -821,9 +831,11 @@
             const dialRaw = phoneDial.value.trim();
             const supportEmail = emailInput.value.trim().toLowerCase();
             const cleanDial = dialRaw.replace(/[^\d+]/g, '');
+            const addressRaw = addressText.value.trim();
+            const addressHtml = escapeHtml(addressRaw).replace(/\r?\n/g, '<br/>');
 
-            if (!display || !cleanDial || !isValidEmail(supportEmail)) {
-                setMessage('Enter a valid phone display, dial value, and support email.', true);
+            if (!display || !cleanDial || !isValidEmail(supportEmail) || !addressRaw) {
+                setMessage('Enter a valid phone display, dial value, support email, and clinic address text.', true);
                 return;
             }
 
@@ -868,6 +880,7 @@
 
                     await saveContentValue(lang.code, 'contact.phone', nextPhone);
                     await saveContentValue(lang.code, 'contact.email', nextEmail);
+                    await saveContentValue(lang.code, 'contact.address', addressHtml);
                     await saveContentValue(lang.code, 'home.callUs', callTextByLang[lang.code] || callTextByLang.en);
                     await saveContentValue(lang.code, 'appointments.monFriHours', monFri.value.trim());
                     await saveContentValue(lang.code, 'appointments.saturdayHours', sat.value.trim());
